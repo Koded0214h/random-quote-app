@@ -1,3 +1,4 @@
+# views.py
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from .models import Quote
@@ -23,8 +24,11 @@ def quotes(request):
         serializer = QuoteSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
-        
+            return Response(serializer.data, status=201)
+        # Log the validation errors if they occur
+        print(serializer.errors)
+        return Response(serializer.errors, status=400)
+
 @api_view(['PUT', 'DELETE'])
 def quote_detail(request, pk):
     try:
@@ -39,8 +43,4 @@ def quote_detail(request, pk):
             return Response(serializer.data)
     elif request.method == "DELETE":
         quote.delete()
-        return Response({"message": "Quote deleted"})  
-        
-    
-        
-        
+        return Response({"message": "Quote deleted"})
